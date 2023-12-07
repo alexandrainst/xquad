@@ -15,7 +15,7 @@ def realign_answer_positions(xquad_json: dict, xquad_json_orig: dict):
                 for ans_idx, answer in enumerate(qa["answers"]):
                     answer_text = answer["text"]
                     answer_start = answer["answer_start"]
-                    matches = list(re.finditer(answer_text.lower(), context.lower()))
+                    matches = list(re.finditer(re.escape(answer_text.lower()), context.lower()))
                     start_int = -1
                     if len(matches) > 1:
                         # Find the starting position in the original (non-translated) text as a percentage of the text.
@@ -32,10 +32,9 @@ def realign_answer_positions(xquad_json: dict, xquad_json_orig: dict):
                         print(context)
                         print(question)
                         print(answer_text)
-                        breakpoint()
                         # Reasign variables in case they were changed in breakpoint
                         xquad_aligned["data"][topic_idx]["paragraphs"][paragraph_idx]["qas"][qa_idx]["answers"][ans_idx]["answer_start"] = start_int
-                        xquad_aligned["data"][topic_idx]["paragraphs"][paragraph_idx]["qas"][qa_idx]["answers"][ans_idx]["answer_text"] = answer_text
+                        xquad_aligned["data"][topic_idx]["paragraphs"][paragraph_idx]["qas"][qa_idx]["answers"][ans_idx]["text"] = answer_text
                         xquad_aligned["data"][topic_idx]["paragraphs"][paragraph_idx]["qas"][qa_idx]["question"] = question
                         xquad_aligned["data"][topic_idx]["paragraphs"][paragraph_idx]["context"] = context
                     else:

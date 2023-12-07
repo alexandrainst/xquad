@@ -57,10 +57,9 @@ def translate_xquad_json(xquad_json: dict, target_lang: str, dryrun: bool=False)
 
 
 def main():
-    #target_langs = ["da", "se", "no", "nl"] #, "is"]
-    target_langs = ["da",] #, "is"]
+    target_langs = ["da", "sv", "nb", "nl"] #, "is"]
 
-    input_json_file_path = Path("../xquad.mini.en.json")
+    input_json_file_path = Path("../xquad.en.json")
 
 
     with open(input_json_file_path, "r") as input_json_file:
