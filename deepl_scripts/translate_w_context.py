@@ -9,6 +9,8 @@ from deepl.translator import Translator
 import xmltodict
 import dicttoxml
 from xml.parsers.expat import ExpatError
+from greynir_client.client import translate_en_to_is
+import unidecode
 
 
 class DummyTranslator:
@@ -22,6 +24,7 @@ class DummyTranslator:
 def fix_xml_error(xml:str):
     # Fix a missing semicolon after &quot
     new_xml, count = re.subn(r"(quot)([^;])", r"\g<1>;\g<2>", xml)
+    new_xml = new_xml.replace('<? xml version="1.0" encoding="UTF-8"? >', '<?xml version="1.0" encoding="UTF-8" ?>')
     print("Fixed xml error")
     print("Old: %s" % xml)
     print("New: %s" % new_xml)
@@ -35,8 +38,13 @@ def translate_xquad_json(xquad_json: dict, target_lang: str, dryrun: bool=False)
         translator = DummyTranslator()
         translate_text = lambda x: translator.translate_text(x)
     else:
-        translator = Translator(auth_key)
-        translate_text = lambda x: translator.translate_text(x, source_lang="en", target_lang=target_lang, tag_handling="xml", preserve_formatting=True).text
+        if target_lang == "is":
+            with open("greynir_apikey.txt", "r") as f:
+                greynir_key = f.read().strip()
+                translate_text = lambda x: translate_en_to_is(greynir_key, [unidecode.unidecode(x)]).translations[0]["translatedText"]
+        else:
+            translator = Translator(auth_key)
+            translate_text = lambda x: translator.translate_text(x, source_lang="en", target_lang=target_lang, tag_handling="xml", preserve_formatting=True).text
 
     xquad_translated = copy.deepcopy(xquad_json)
 
@@ -85,8 +93,9 @@ def translate_xquad_json(xquad_json: dict, target_lang: str, dryrun: bool=False)
 
 
 def main():
-    target_langs = ["da", "sv", "nb", "nl"] #, "is"]
+    #target_langs = ["da", "sv", "nb", "nl"] #, "is"]
     #target_langs = ["da",] #, "is"]
+    target_langs = ["is"]
 
     input_json_file_path = Path("../xquad.en.json")
 
