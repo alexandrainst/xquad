@@ -55,7 +55,7 @@ def main():
 
     aligned = realign_answer_positions(loaded_json, orig_json)
     with open("fixed_" + input_json_file_path.name, "w") as outfile:
-        json.dump(aligned, outfile, indent=2)
+        json.dump(aligned, outfile, indent=2, ensure_ascii=False)
 
 if __name__ == "__main__":
     main()
